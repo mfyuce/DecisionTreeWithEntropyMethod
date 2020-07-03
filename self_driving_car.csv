@@ -1,0 +1,5 @@
+Grade,Bumpiness,SpeedLimit,Speed
+steep,bumpiness,yes,slow
+steep,smooth,yes,slow
+flat,bumpiness,no,fast
+steep,smooth,no,fast

@@ -151,9 +151,13 @@ def test_tree(tree, row, target):
             return False
     return False
 
-
+# Set 1
 TARGET = "Covid-19 Teshisi"
 file = 'corona.csv'
+
+# Set 2 https://medium.com/coinmonks/what-is-entropy-and-why-information-gain-is-matter-4e85d46d2f01
+# TARGET = "Speed"
+# file = 'self_driving_car.csv'
 # TARGET = "play"
 # file = 'weather.csv'
 # file = 'weather_v2.csv'
