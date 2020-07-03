@@ -50,7 +50,8 @@ def find_entropy(attribute, target, data):
             ent[attr] = 0
         for distinct_key in all_distinct_keys:
             # for o, p in target_values.items():
-            # tot = sum([target_values[o] for s, target_values in distinct.items()])
+            # tot = sum([target_values[o] for s,
+            # target_values in distinct.items()])
             n = target_values[distinct_key] / total[attr]
             if n > 0:
                 ent[attr] += -n * math.log(n, 2)
@@ -79,7 +80,13 @@ def read_file(file_in):
     return data, attributes
 
 
-def split_data_and_decide(attribute, data, target, attributes_in, collected_attributes_in, tree, entropies_in=None):
+def split_data_and_decide(attribute,
+                          data,
+                          target,
+                          attributes_in,
+                          collected_attributes_in,
+                          tree,
+                          entropies_in=None):
     if not tree:
         tree = {}
     tree[attribute] = {}
@@ -94,49 +101,71 @@ def split_data_and_decide(attribute, data, target, attributes_in, collected_attr
     for d in t:
         cont = not entropies_in
         if not cont:
-            cont = entropies_in[attribute] is not None and entropies_in[attribute] > 0
+            cont = entropies_in[attribute] is not None \
+                   and entropies_in[attribute] > 0
         # if cont:
-        decision_tree(target, tree[attribute][d]["data"], attributes_in,collected_attributes_in, t[d], d)
+        decision_tree(target,
+                      tree[attribute][d]["data"],
+                      attributes_in,
+                      collected_attributes_in,
+                      t[d],
+                      d)
         del tree[attribute][d]["data"]
     return tree
 
 
-def decision_tree(target, data, attributes_in, collected_attributes_in=None, tree=None, current_attribute=None):
+def decision_tree(target,
+                  data,
+                  attributes_in,
+                  collected_attributes_in=None,
+                  tree=None,
+                  current_attribute=None):
     if not collected_attributes_in:
         collected_attributes_in = []
     class_entropy, class_counts = find_initial_entropy(target, data)
-    print("TARGET ({}) Entropy/Counts: {}/{}\n".format(target, class_entropy, class_counts))
+    print("TARGET ({}) Entropy/Counts: {}/{}\n"
+          .format(target, class_entropy, class_counts))
     attribute_entropies = {}
     attribute_counts = {}
     attr_difference = set(attributes_in).difference(collected_attributes_in)
     for a in attr_difference:
         if a != target:
-            attribute_entropies[a], attribute_counts[a] = find_entropy(a, target, data)
-            print("{} Entropy/Counts: {}/{}".format(a, attribute_entropies[a], attribute_counts[a]))
+            attribute_entropies[a], attribute_counts[a] \
+                = find_entropy(a, target, data)
+            print("{} Entropy/Counts: {}/{}"
+                  .format(a, attribute_entropies[a], attribute_counts[a]))
     print("\n")
     # information gains
     max_info_gain = 0
     max_info_gain_attr = ""
     for a in attr_difference:
         if a != target:
-            attribute_entropies[a], attribute_counts[a] = find_entropy(a, target, data)
+            attribute_entropies[a], attribute_counts[a] \
+                = find_entropy(a, target, data)
             info_gain = class_entropy - attribute_entropies[a]
             if info_gain > max_info_gain:
                 max_info_gain = info_gain
                 max_info_gain_attr = a
             print("Information gain {}: {} ".format(a, info_gain))
     print("\n")
-    print("Max Information gain {} with {} ".format(max_info_gain, max_info_gain_attr))
+    print("Max Information gain {} with {} "
+          .format(max_info_gain, max_info_gain_attr))
     print("\n")
     if not max_info_gain_attr:
-        print("Leaf with {} \n===================================\n".format(
-            current_attribute if current_attribute else target))
+        print("Leaf with {} \n===================================\n"
+            .format( current_attribute if current_attribute else target))
         # assert len(set([i[target] for i in data])) < 2
         tree[target] = {data[0][target]: {}}
         return tree
     else:
         print("\n===================================\n")
-    return split_data_and_decide(max_info_gain_attr, data, target, attributes_in, collected_attributes_in, tree, attribute_entropies)
+    return split_data_and_decide(max_info_gain_attr,
+                                 data,
+                                 target,
+                                 attributes_in,
+                                 collected_attributes_in,
+                                 tree,
+                                 attribute_entropies)
 
 
 def test_tree(tree, row, target):
@@ -150,6 +179,7 @@ def test_tree(tree, row, target):
         else:
             return False
     return False
+
 
 # Set 1
 TARGET = "Covid-19 Teshisi"
@@ -171,7 +201,8 @@ data_in, attributes_in = read_file(file)
 last = math.ceil(len(data_in) / 3 * 1)
 # data_test = data_in[:last]
 data_test = random.sample(data_in, last)
-data_train = data_in  # [i for i in data_in if i not in data_test] + [j for j in data_test if j not in data_in]#[last:]
+data_train = data_in
+# data_train = [i for i in data_in if i not in data_test] + [j for j in data_test if j not in data_in]#[last:]
 resulting_tree = decision_tree(TARGET, data_train, attributes_in)
 # resulting_tree = decision_tree("play", data_train, attributes)
 # resulting_tree = decision_tree("contact-lenses", data_train, attributes)
